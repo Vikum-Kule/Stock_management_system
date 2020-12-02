@@ -4,10 +4,11 @@
  * and open the template in the editor.
  */
 package UIs;
-
+import java.sql.*;
 import java.awt.Color;
 import java.awt.Font;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 
@@ -24,7 +25,7 @@ public class Import extends javax.swing.JFrame {
         initComponents();
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         jTable1.getTableHeader().setFont(new Font("Tahoma", Font.BOLD, 12));
-        AutoCompleteDecorator.decorate(jComboBox1);
+        AutoCompleteDecorator.decorate(item);
     }
 
     /**
@@ -39,16 +40,21 @@ public class Import extends javax.swing.JFrame {
         parent = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
         insert_panel = new javax.swing.JPanel();
+        jLabel15 = new javax.swing.JLabel();
+        Total = new javax.swing.JTextField();
+        MFD = new datechooser.beans.DateChooserCombo();
+        EXP = new datechooser.beans.DateChooserCombo();
         Product_code = new javax.swing.JTextField();
-        jTextField1 = new javax.swing.JTextField();
-        jComboBox1 = new javax.swing.JComboBox<>();
-        jTextField2 = new javax.swing.JTextField();
-        jButton1 = new javax.swing.JButton();
-        jComboBox2 = new javax.swing.JComboBox<>();
-        jTextField3 = new javax.swing.JTextField();
+        min_rate = new javax.swing.JTextField();
+        item = new javax.swing.JComboBox<>();
+        category = new javax.swing.JComboBox<>();
         jLabel13 = new javax.swing.JLabel();
         jButton2 = new javax.swing.JButton();
-        jSpinner1 = new javax.swing.JSpinner();
+        quantitiy = new javax.swing.JSpinner();
+        brand_name = new javax.swing.JTextField();
+        jButton3 = new javax.swing.JButton();
+        price = new javax.swing.JTextField();
+        jLabel14 = new javax.swing.JLabel();
         jLabel12 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
@@ -61,6 +67,8 @@ public class Import extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
         button_panel = new javax.swing.JPanel();
+        btn_reset = new javax.swing.JPanel();
+        jLabel17 = new javax.swing.JLabel();
         btn_add = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
         btn_update = new javax.swing.JPanel();
@@ -80,47 +88,49 @@ public class Import extends javax.swing.JFrame {
 
         insert_panel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
+        jLabel15.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        jLabel15.setText("Total");
+        insert_panel.add(jLabel15, new org.netbeans.lib.awtextra.AbsoluteConstraints(680, 190, -1, -1));
+
+        Total.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        insert_panel.add(Total, new org.netbeans.lib.awtextra.AbsoluteConstraints(740, 190, 130, -1));
+
+        MFD.setCalendarPreferredSize(new java.awt.Dimension(290, 200));
+        MFD.setFieldFont(new java.awt.Font("Tahoma", java.awt.Font.PLAIN, 12));
+        insert_panel.add(MFD, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 190, -1, -1));
+
+        EXP.setFieldFont(new java.awt.Font("Tahoma", java.awt.Font.PLAIN, 14));
+        insert_panel.add(EXP, new org.netbeans.lib.awtextra.AbsoluteConstraints(460, 190, -1, -1));
+
         Product_code.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         Product_code.setHorizontalAlignment(javax.swing.JTextField.LEFT);
         insert_panel.add(Product_code, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 10, 160, 30));
 
-        jTextField1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        jTextField1.setHorizontalAlignment(javax.swing.JTextField.LEFT);
-        insert_panel.add(jTextField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 160, 160, 30));
+        min_rate.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        min_rate.setHorizontalAlignment(javax.swing.JTextField.LEFT);
+        insert_panel.add(min_rate, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 130, 160, 30));
 
-        jComboBox1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "java", "c", "c++", "Mysql", "Angular", "React", "database" }));
-        jComboBox1.addActionListener(new java.awt.event.ActionListener() {
+        item.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        item.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "java", "c", "c++", "Mysql", "Angular", "React", "database" }));
+        item.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jComboBox1ActionPerformed(evt);
+                itemActionPerformed(evt);
             }
         });
-        insert_panel.add(jComboBox1, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 50, 210, 30));
+        insert_panel.add(item, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 80, 210, 30));
 
-        jTextField2.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        insert_panel.add(jTextField2, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 20, 210, 30));
-
-        jButton1.setBackground(new java.awt.Color(102, 0, 102));
-        jButton1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        jButton1.setForeground(new java.awt.Color(255, 255, 255));
-        jButton1.setText("Add");
-        insert_panel.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(790, 20, -1, 30));
-
-        jComboBox2.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        jComboBox2.addActionListener(new java.awt.event.ActionListener() {
+        category.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        category.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        category.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jComboBox2ActionPerformed(evt);
+                categoryActionPerformed(evt);
             }
         });
-        insert_panel.add(jComboBox2, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 80, 160, 30));
-
-        jTextField3.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        insert_panel.add(jTextField3, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 50, 160, 30));
+        insert_panel.add(category, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 50, 160, 30));
 
         jLabel13.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jLabel13.setText("EXP");
-        insert_panel.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 120, 120, 20));
+        insert_panel.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 190, 120, 20));
 
         jButton2.setBackground(new java.awt.Color(102, 0, 102));
         jButton2.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
@@ -133,8 +143,29 @@ public class Import extends javax.swing.JFrame {
         });
         insert_panel.add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 50, -1, 30));
 
-        jSpinner1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        insert_panel.add(jSpinner1, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 120, 60, -1));
+        quantitiy.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        insert_panel.add(quantitiy, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 90, 60, -1));
+
+        brand_name.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        insert_panel.add(brand_name, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 20, 210, 30));
+
+        jButton3.setBackground(new java.awt.Color(102, 0, 102));
+        jButton3.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jButton3.setForeground(new java.awt.Color(255, 255, 255));
+        jButton3.setText("Add");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
+        insert_panel.add(jButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(780, 80, -1, 30));
+
+        price.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        insert_panel.add(price, new org.netbeans.lib.awtextra.AbsoluteConstraints(630, 130, 140, 30));
+
+        jLabel14.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        jLabel14.setText("Item");
+        insert_panel.add(jLabel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 90, -1, -1));
 
         jLabel12.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jLabel12.setText("Category");
@@ -150,25 +181,25 @@ public class Import extends javax.swing.JFrame {
 
         jLabel8.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jLabel8.setText("Quantity");
-        insert_panel.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 120, 120, 20));
+        insert_panel.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 90, 120, 20));
 
         jLabel9.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jLabel9.setText("Price Per\nOne item(Rs.)");
-        insert_panel.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(460, 180, 160, 30));
+        insert_panel.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 130, 160, 30));
 
         jLabel10.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jLabel10.setText("Min Rate");
-        insert_panel.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 160, 120, 20));
+        insert_panel.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 130, 120, 30));
 
         jLabel11.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jLabel11.setText("MFD");
-        insert_panel.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 120, 120, 20));
+        insert_panel.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 190, 120, 20));
 
         jLabel2.setBackground(new java.awt.Color(255, 255, 255));
         jLabel2.setOpaque(true);
-        insert_panel.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 990, 220));
+        insert_panel.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 990, 230));
 
-        jPanel1.add(insert_panel, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 20, 990, 220));
+        jPanel1.add(insert_panel, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 20, 990, 230));
 
         display_panel.setBackground(new java.awt.Color(255, 255, 255));
         display_panel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -194,6 +225,25 @@ public class Import extends javax.swing.JFrame {
         jPanel1.add(display_panel, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 300, 990, 260));
 
         button_panel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        btn_reset.setBackground(new java.awt.Color(102, 0, 102));
+        btn_reset.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                btn_resetMousePressed(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                btn_resetMouseReleased(evt);
+            }
+        });
+        btn_reset.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jLabel17.setFont(new java.awt.Font("Calibri", 0, 24)); // NOI18N
+        jLabel17.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel17.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel17.setText("RESET");
+        btn_reset.add(jLabel17, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 150, 40));
+
+        button_panel.add(btn_reset, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 0, 150, 40));
 
         btn_add.setBackground(new java.awt.Color(102, 0, 102));
         btn_add.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -252,7 +302,7 @@ public class Import extends javax.swing.JFrame {
 
         button_panel.add(btn_delete, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 0, 150, 40));
 
-        jPanel1.add(button_panel, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 250, 990, 40));
+        jPanel1.add(button_panel, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 260, 990, 40));
 
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/istockphoto-1005362660-612x612.jpg"))); // NOI18N
         jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1050, 585));
@@ -288,17 +338,44 @@ public class Import extends javax.swing.JFrame {
        resetColor(btn_delete);
     }//GEN-LAST:event_btn_deleteMouseReleased
 
-    private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
+    private void itemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jComboBox1ActionPerformed
+    }//GEN-LAST:event_itemActionPerformed
 
-    private void jComboBox2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox2ActionPerformed
+    private void categoryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_categoryActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jComboBox2ActionPerformed
+    }//GEN-LAST:event_categoryActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void btn_resetMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_resetMousePressed
+        setColor(btn_reset);
+        try{
+            Product_code.setText(null);
+            Total.setText(null);
+            brand_name.setText(null);
+            item.setSelectedIndex(0);
+            category.setSelectedIndex(0); 
+            min_rate.setText(null);
+            price.setText(null);
+            quantitiy.setValue(null);
+            EXP.setSelectedDate(null);
+            MFD.setSelectedDate(null);       
+        }
+        catch(Exception e){
+            JOptionPane.showMessageDialog(null,e);
+        }
+    }//GEN-LAST:event_btn_resetMousePressed
+
+    private void btn_resetMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_resetMouseReleased
+        resetColor(btn_reset);
+    }//GEN-LAST:event_btn_resetMouseReleased
     
     public void setColor(JPanel panel){
         panel.setBackground(new Color(85,65,118));
@@ -343,22 +420,30 @@ public class Import extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private datechooser.beans.DateChooserCombo EXP;
+    private datechooser.beans.DateChooserCombo MFD;
     private javax.swing.JTextField Product_code;
+    private javax.swing.JTextField Total;
+    private javax.swing.JTextField brand_name;
     private javax.swing.JPanel btn_add;
     private javax.swing.JPanel btn_delete;
+    private javax.swing.JPanel btn_reset;
     private javax.swing.JPanel btn_update;
     private javax.swing.JPanel button_panel;
+    private javax.swing.JComboBox<String> category;
     private javax.swing.JPanel display_panel;
     private javax.swing.JPanel insert_panel;
-    private javax.swing.JButton jButton1;
+    private javax.swing.JComboBox<String> item;
     private javax.swing.JButton jButton2;
-    private javax.swing.JComboBox<String> jComboBox1;
-    private javax.swing.JComboBox<String> jComboBox2;
+    private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
+    private javax.swing.JLabel jLabel14;
+    private javax.swing.JLabel jLabel15;
+    private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -369,11 +454,10 @@ public class Import extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JSpinner jSpinner1;
     private javax.swing.JTable jTable1;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
-    private javax.swing.JTextField jTextField3;
+    private javax.swing.JTextField min_rate;
     private javax.swing.JPanel parent;
+    private javax.swing.JTextField price;
+    private javax.swing.JSpinner quantitiy;
     // End of variables declaration//GEN-END:variables
 }
