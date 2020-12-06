@@ -10,6 +10,7 @@ import java.awt.Font;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.table.DefaultTableModel;
 import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 
 /**
@@ -17,6 +18,12 @@ import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
  * @author Vikum
  */
 public class Import extends javax.swing.JFrame {
+
+    private static Connection Connection;
+    Connection con =null;
+    PreparedStatement pst =null;
+    ResultSet rs =null;
+    DefaultTableModel model = new DefaultTableModel();
 
     /**
      * Creates new form Import
@@ -26,8 +33,15 @@ public class Import extends javax.swing.JFrame {
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         jTable1.getTableHeader().setFont(new Font("Tahoma", Font.BOLD, 12));
         AutoCompleteDecorator.decorate(item);
+        
+        
+        Object col[]= {"Product Code","Brand Name","Item","Qty","Price Per Item","Min Rate","MFD","EXP","Supplier","DateTime"};
+        model.setColumnIdentifiers(col);
+        jTable1.setModel(model);
+        con = Import.ConnectDB();
+        updateTable();
+        
     }
-
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -313,7 +327,95 @@ public class Import extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+    
+    public static Connection ConnectDB(){
+        try{
+            Class.forName("org.sqlite.JDBC");
+            Connection con= DriverManager.getConnection("jdbc:sqlite:data_from.db");
+            return con;
+        }
+        catch(Exception e){
+           
+           JOptionPane.showMessageDialog(null, e);
+        }
+        return null;
+    }
+    
+    public void updateTable(){
+        con = Import.ConnectDB();
+        if(con!= null){
+           String sql = "SELECT brandId,brandName,name,supplyQTY,ppi,min_rate,MFD,EXP,supplyName,supplyDate"
+                   + " from brand "
+                   + "inner join item on brand.itemName = item.name "
+                   + "inner join Supplier on brand.supply_regNo = Supplier.Supplier_regNo ";
+//                            +"stockId,"
+//                            +"stock.item AS item,"
+//                            +"item.category AS category,"
+//                            +"item.min_rate minRate,"
+//                            +"stock.EXP AS EXP"
+//                            +"FROM"
+//                            +"stock"
+//                            +"INNER JOIN item ON item.name = stock.item";
+            
+            
+//            String sql ="SELECT stockId,brandName,item,QTY,ppi,min_rate,MFD,EXP,supplier,Datetime FROM stock "
+//                    + "INNER JOIN item ON item.name = stock.item"
+//                    + "INNER JOIN supply ON supply.id = stock.id"
+//                    + "INNER JOIN supply ON supply.id = supplier.name"
+//                    + "INNER JOIN item ON item.id = brand.ietmName";
 
+           try{
+                
+                pst = con.prepareStatement(sql);
+                rs = pst.executeQuery();
+                Object[] columnData = new Object[10];
+                System.out.println("eeajasbc");
+            while (rs.next()) {
+                System.out.println("eeeee");
+                 columnData[0]= rs.getInt("brandId");
+                    columnData[1]= rs.getString("brandName");
+                    columnData[2]= rs.getString("name");
+                    columnData[3]= rs.getString("supplyQTY");
+                    columnData[4]= rs.getString("ppi");
+                    columnData[5]= rs.getString("min_rate");
+                    columnData[6]= rs.getString("MFD");
+                    columnData[7]= rs.getString("EXP");
+                    columnData[8]= rs.getString("supplyName");
+                    columnData[9]= rs.getString("supplyDate");
+                   model.addRow(columnData);
+            }
+           }
+//           try{
+//                
+//                pst = con.prepareStatement(sql);
+//                rs = pst.executeQuery();
+//                Object[] columnData = new Object[10];
+//                System.out.println(rs.getString("stockId"));
+//                while(rs.next()){
+//                   
+//                    columnData[0]= rs.getString("stock.id");
+//                    columnData[1]= rs.getString("brandName");
+//                    columnData[2]= rs.getString("name");
+//                    columnData[3]= rs.getString("QTY");
+//                    columnData[4]= rs.getString("ppi");
+//                    columnData[5]= rs.getString("min_rate");
+//                    columnData[6]= rs.getString("MFD");
+//                    columnData[7]= rs.getString("EXP");
+//                    columnData[8]= rs.getString("supplier");
+//                    columnData[9]= rs.getString("Datetime");
+//                    //columnData[10]= rs.getString("stock.id");
+//                    model.addRow(columnData);
+//                }
+//            
+//           }
+           catch(Exception e){
+               JOptionPane.showMessageDialog(null, e);
+           }
+            
+        }
+        
+    }
+    
     private void btn_addMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_addMouseReleased
         resetColor(btn_add);
     }//GEN-LAST:event_btn_addMouseReleased
@@ -364,7 +466,6 @@ public class Import extends javax.swing.JFrame {
             category.setSelectedIndex(0); 
             min_rate.setText(null);
             price.setText(null);
-            quantitiy.setValue(null);
             EXP.setSelectedDate(null);
             MFD.setSelectedDate(null);       
         }
