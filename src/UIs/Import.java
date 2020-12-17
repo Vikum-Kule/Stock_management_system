@@ -7,6 +7,8 @@ package UIs;
 import java.sql.*;
 import java.awt.Color;
 import java.awt.Font;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -22,7 +24,9 @@ public class Import extends javax.swing.JFrame {
     private static Connection Connection;
     Connection con =null;
     PreparedStatement pst =null;
+    PreparedStatement pst2 =null;
     ResultSet rs =null;
+    ResultSet rs2 =null;
     DefaultTableModel model = new DefaultTableModel();
 
     /**
@@ -32,7 +36,7 @@ public class Import extends javax.swing.JFrame {
         initComponents();
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         jTable1.getTableHeader().setFont(new Font("Tahoma", Font.BOLD, 12));
-        AutoCompleteDecorator.decorate(item);
+        AutoCompleteDecorator.decorate(supplier);
         
         
         Object col[]= {"Product Code","Brand Name","Item","Qty","Price Per Item","Min Rate","MFD","EXP","Supplier","DateTime"};
@@ -40,6 +44,7 @@ public class Import extends javax.swing.JFrame {
         jTable1.setModel(model);
         con = Import.ConnectDB();
         updateTable();
+        supplierUpdate();
         
     }
     /**
@@ -55,18 +60,18 @@ public class Import extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         insert_panel = new javax.swing.JPanel();
         jLabel15 = new javax.swing.JLabel();
+        item = new javax.swing.JTextField();
         Total = new javax.swing.JTextField();
         MFD = new datechooser.beans.DateChooserCombo();
         EXP = new datechooser.beans.DateChooserCombo();
+        jLabel16 = new javax.swing.JLabel();
+        supplier = new javax.swing.JComboBox<>();
+        category = new javax.swing.JTextField();
         Product_code = new javax.swing.JTextField();
         min_rate = new javax.swing.JTextField();
-        item = new javax.swing.JComboBox<>();
-        category = new javax.swing.JComboBox<>();
         jLabel13 = new javax.swing.JLabel();
-        jButton2 = new javax.swing.JButton();
         quantitiy = new javax.swing.JSpinner();
         brand_name = new javax.swing.JTextField();
-        jButton3 = new javax.swing.JButton();
         price = new javax.swing.JTextField();
         jLabel14 = new javax.swing.JLabel();
         jLabel12 = new javax.swing.JLabel();
@@ -106,6 +111,14 @@ public class Import extends javax.swing.JFrame {
         jLabel15.setText("Total");
         insert_panel.add(jLabel15, new org.netbeans.lib.awtextra.AbsoluteConstraints(680, 190, -1, -1));
 
+        item.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        item.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                itemActionPerformed(evt);
+            }
+        });
+        insert_panel.add(item, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 60, 210, 30));
+
         Total.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         insert_panel.add(Total, new org.netbeans.lib.awtextra.AbsoluteConstraints(740, 190, 130, -1));
 
@@ -116,6 +129,16 @@ public class Import extends javax.swing.JFrame {
         EXP.setFieldFont(new java.awt.Font("Tahoma", java.awt.Font.PLAIN, 14));
         insert_panel.add(EXP, new org.netbeans.lib.awtextra.AbsoluteConstraints(460, 190, -1, -1));
 
+        jLabel16.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        jLabel16.setText("Supplier");
+        insert_panel.add(jLabel16, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 110, -1, -1));
+
+        supplier.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        insert_panel.add(supplier, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 100, 210, 30));
+
+        category.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        insert_panel.add(category, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 50, 160, 30));
+
         Product_code.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         Product_code.setHorizontalAlignment(javax.swing.JTextField.LEFT);
         insert_panel.add(Product_code, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 10, 160, 30));
@@ -124,38 +147,9 @@ public class Import extends javax.swing.JFrame {
         min_rate.setHorizontalAlignment(javax.swing.JTextField.LEFT);
         insert_panel.add(min_rate, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 130, 160, 30));
 
-        item.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        item.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "java", "c", "c++", "Mysql", "Angular", "React", "database" }));
-        item.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                itemActionPerformed(evt);
-            }
-        });
-        insert_panel.add(item, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 80, 210, 30));
-
-        category.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        category.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        category.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                categoryActionPerformed(evt);
-            }
-        });
-        insert_panel.add(category, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 50, 160, 30));
-
         jLabel13.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jLabel13.setText("EXP");
         insert_panel.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 190, 120, 20));
-
-        jButton2.setBackground(new java.awt.Color(102, 0, 102));
-        jButton2.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        jButton2.setForeground(new java.awt.Color(255, 255, 255));
-        jButton2.setText("Add");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
-            }
-        });
-        insert_panel.add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 50, -1, 30));
 
         quantitiy.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         insert_panel.add(quantitiy, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 90, 60, -1));
@@ -163,23 +157,12 @@ public class Import extends javax.swing.JFrame {
         brand_name.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         insert_panel.add(brand_name, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 20, 210, 30));
 
-        jButton3.setBackground(new java.awt.Color(102, 0, 102));
-        jButton3.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        jButton3.setForeground(new java.awt.Color(255, 255, 255));
-        jButton3.setText("Add");
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
-            }
-        });
-        insert_panel.add(jButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(780, 80, -1, 30));
-
         price.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        insert_panel.add(price, new org.netbeans.lib.awtextra.AbsoluteConstraints(630, 130, 140, 30));
+        insert_panel.add(price, new org.netbeans.lib.awtextra.AbsoluteConstraints(630, 150, 140, 30));
 
         jLabel14.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jLabel14.setText("Item");
-        insert_panel.add(jLabel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 90, -1, -1));
+        insert_panel.add(jLabel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 70, -1, -1));
 
         jLabel12.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jLabel12.setText("Category");
@@ -199,7 +182,7 @@ public class Import extends javax.swing.JFrame {
 
         jLabel9.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jLabel9.setText("Price Per\nOne item(Rs.)");
-        insert_panel.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 130, 160, 30));
+        insert_panel.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 150, 160, 30));
 
         jLabel10.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jLabel10.setText("Min Rate");
@@ -340,6 +323,24 @@ public class Import extends javax.swing.JFrame {
         }
         return null;
     }
+    public void supplierUpdate(){
+        con = Import.ConnectDB();
+        if(con!= null){
+           String sql2 = "SELECT * from Supplier";
+           System.out.println("eeee ");
+           try{
+                pst2 = con.prepareStatement(sql2);
+                rs2 = pst2.executeQuery();
+            while (rs2.next()) {
+                String name = rs2.getString("supplyName");
+                supplier.addItem(name);
+                  }
+           }
+           catch(Exception e){
+               JOptionPane.showMessageDialog(null, e);
+           }
+        }
+    }
     
     public void updateTable(){
         con = Import.ConnectDB();
@@ -348,22 +349,54 @@ public class Import extends javax.swing.JFrame {
                    + " from brand "
                    + "inner join item on brand.itemName = item.name "
                    + "inner join Supplier on brand.supply_regNo = Supplier.Supplier_regNo ";
-//                            +"stockId,"
-//                            +"stock.item AS item,"
-//                            +"item.category AS category,"
-//                            +"item.min_rate minRate,"
-//                            +"stock.EXP AS EXP"
-//                            +"FROM"
-//                            +"stock"
-//                            +"INNER JOIN item ON item.name = stock.item";
-            
-            
-//            String sql ="SELECT stockId,brandName,item,QTY,ppi,min_rate,MFD,EXP,supplier,Datetime FROM stock "
-//                    + "INNER JOIN item ON item.name = stock.item"
-//                    + "INNER JOIN supply ON supply.id = stock.id"
-//                    + "INNER JOIN supply ON supply.id = supplier.name"
-//                    + "INNER JOIN item ON item.id = brand.ietmName";
 
+           try{
+                
+                pst = con.prepareStatement(sql);
+                rs = pst.executeQuery();
+                Object[] columnData = new Object[10];
+               // System.out.println("eeajasbc");
+            while (rs.next()) {
+                //System.out.println("eeeee");
+                 columnData[0]= rs.getInt("brandId");
+                    columnData[1]= rs.getString("brandName");
+                    columnData[2]= rs.getString("name");
+                    columnData[3]= rs.getString("supplyQTY");
+                    columnData[4]= rs.getString("ppi");
+                    columnData[5]= rs.getString("min_rate");
+                    columnData[6]= rs.getString("MFD");
+                    columnData[7]= rs.getString("EXP");
+                    columnData[8]= rs.getString("supplyName");
+                    columnData[9]= rs.getString("supplyDate");
+                   model.addRow(columnData);
+            }
+           }
+           catch(Exception e){
+               JOptionPane.showMessageDialog(null, e);
+           }
+            
+        }
+        try {   
+            con.close();
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+    }
+    
+    private void btn_addMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_addMouseReleased
+        resetColor(btn_add);
+    }//GEN-LAST:event_btn_addMouseReleased
+
+    private void btn_addMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_addMousePressed
+       setColor(btn_add);
+       con = Import.ConnectDB();
+        if(con!= null){
+            String sql = "SELECT Supplier_regNo from Supplier "
+            
+            
+            
+           String sql2 = "INSERT INTO brand(brandId,brandName,itemName,supplyQTY,supplyDate,ppi,MFD,EXP,supply_regNo) VALUES(?,?,?,?,?,?,?,?,?)";
+                   
            try{
                 
                 pst = con.prepareStatement(sql);
@@ -385,43 +418,16 @@ public class Import extends javax.swing.JFrame {
                    model.addRow(columnData);
             }
            }
-//           try{
-//                
-//                pst = con.prepareStatement(sql);
-//                rs = pst.executeQuery();
-//                Object[] columnData = new Object[10];
-//                System.out.println(rs.getString("stockId"));
-//                while(rs.next()){
-//                   
-//                    columnData[0]= rs.getString("stock.id");
-//                    columnData[1]= rs.getString("brandName");
-//                    columnData[2]= rs.getString("name");
-//                    columnData[3]= rs.getString("QTY");
-//                    columnData[4]= rs.getString("ppi");
-//                    columnData[5]= rs.getString("min_rate");
-//                    columnData[6]= rs.getString("MFD");
-//                    columnData[7]= rs.getString("EXP");
-//                    columnData[8]= rs.getString("supplier");
-//                    columnData[9]= rs.getString("Datetime");
-//                    //columnData[10]= rs.getString("stock.id");
-//                    model.addRow(columnData);
-//                }
-//            
-//           }
            catch(Exception e){
                JOptionPane.showMessageDialog(null, e);
            }
             
         }
-        
-    }
-    
-    private void btn_addMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_addMouseReleased
-        resetColor(btn_add);
-    }//GEN-LAST:event_btn_addMouseReleased
-
-    private void btn_addMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_addMousePressed
-       setColor(btn_add);
+        try {   
+            con.close();
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
     }//GEN-LAST:event_btn_addMousePressed
 
     private void btn_updateMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_updateMousePressed
@@ -440,30 +446,14 @@ public class Import extends javax.swing.JFrame {
        resetColor(btn_delete);
     }//GEN-LAST:event_btn_deleteMouseReleased
 
-    private void itemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_itemActionPerformed
-
-    private void categoryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_categoryActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_categoryActionPerformed
-
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton2ActionPerformed
-
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton3ActionPerformed
-
     private void btn_resetMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_resetMousePressed
         setColor(btn_reset);
         try{
             Product_code.setText(null);
             Total.setText(null);
             brand_name.setText(null);
-            item.setSelectedIndex(0);
-            category.setSelectedIndex(0); 
+            item.setText(null);
+            category.setText(null);
             min_rate.setText(null);
             price.setText(null);
             EXP.setSelectedDate(null);
@@ -477,6 +467,10 @@ public class Import extends javax.swing.JFrame {
     private void btn_resetMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_resetMouseReleased
         resetColor(btn_reset);
     }//GEN-LAST:event_btn_resetMouseReleased
+
+    private void itemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_itemActionPerformed
     
     public void setColor(JPanel panel){
         panel.setBackground(new Color(85,65,118));
@@ -531,12 +525,10 @@ public class Import extends javax.swing.JFrame {
     private javax.swing.JPanel btn_reset;
     private javax.swing.JPanel btn_update;
     private javax.swing.JPanel button_panel;
-    private javax.swing.JComboBox<String> category;
+    private javax.swing.JTextField category;
     private javax.swing.JPanel display_panel;
     private javax.swing.JPanel insert_panel;
-    private javax.swing.JComboBox<String> item;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
+    private javax.swing.JTextField item;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -544,6 +536,7 @@ public class Import extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
+    private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -560,5 +553,6 @@ public class Import extends javax.swing.JFrame {
     private javax.swing.JPanel parent;
     private javax.swing.JTextField price;
     private javax.swing.JSpinner quantitiy;
+    private javax.swing.JComboBox<String> supplier;
     // End of variables declaration//GEN-END:variables
 }
