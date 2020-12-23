@@ -15,6 +15,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.table.DefaultTableModel;
 import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
+import java.util.Date;
 
 /**
  *
@@ -219,11 +220,16 @@ public class Import extends javax.swing.JFrame {
                 "Product Code", "Brand name", "Category", "Qty", "Price Per Item", "Min Rate", "MFD", "EXP", "Suppliyer", "DateTime"
             }
         ));
-        jTable1.setEnabled(false);
+        jTable1.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         jTable1.setGridColor(new java.awt.Color(102, 0, 102));
+        jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTable1MouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(jTable1);
 
-        display_panel.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 970, 250));
+        display_panel.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 960, 250));
 
         jPanel1.add(display_panel, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 300, 990, 260));
 
@@ -252,6 +258,11 @@ public class Import extends javax.swing.JFrame {
         btn_delete.setText("DELETE");
         btn_delete.setMaximumSize(new java.awt.Dimension(113, 39));
         btn_delete.setMinimumSize(new java.awt.Dimension(113, 39));
+        btn_delete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_deleteActionPerformed(evt);
+            }
+        });
         button_panel.add(btn_delete, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 0, 120, 40));
 
         btn_add.setBackground(new java.awt.Color(102, 0, 102));
@@ -295,7 +306,7 @@ public class Import extends javax.swing.JFrame {
         con = Import.ConnectDB();
         if(con!= null){
            String sql2 = "SELECT * from Supplier";
-           System.out.println("eeee ");
+          // System.out.println("eeee ");
            try{
                 pst2 = con.prepareStatement(sql2);
                 rs2 = pst2.executeQuery();
@@ -326,7 +337,7 @@ public class Import extends javax.swing.JFrame {
                // System.out.println("eeajasbc");
             while (rs.next()) {
                 //System.out.println("eeeee");
-                 columnData[0]= rs.getInt("brandId");
+                    columnData[0]= rs.getString("brandId");
                     columnData[1]= rs.getString("brandName");
                     columnData[2]= rs.getString("name");
                     columnData[3]= rs.getString("supplyQTY");
@@ -395,6 +406,50 @@ public class Import extends javax.swing.JFrame {
         
         return x;
     }
+    public void rowAdd(){
+         con = Import.ConnectDB();
+        if(con!= null){
+           String sql = "SELECT brandId,brandName,name,supplyQTY,ppi,min_rate,MFD,EXP,supplyName,supplyDate"
+                   + " from brand "
+                   + "inner join item on brand.itemName = item.name "
+                   + "inner join Supplier on brand.supply_regNo = Supplier.Supplier_regNo WHERE brandId=?";
+
+           try{
+                
+                pst = con.prepareStatement(sql);
+                pst.setString(1,bar_code.getText());
+                rs = pst.executeQuery();
+                Object[] columnData = new Object[10];
+               // System.out.println("eeajasbc");
+            if(rs.next()) {
+                //System.out.println("eeeee");
+                    columnData[0]= rs.getString("brandId");
+                    columnData[1]= rs.getString("brandName");
+                    columnData[2]= rs.getString("name");
+                    columnData[3]= rs.getString("supplyQTY");
+                    columnData[4]= rs.getString("ppi");
+                    columnData[5]= rs.getString("min_rate");
+                    columnData[6]= rs.getString("MFD");
+                    columnData[7]= rs.getString("EXP");
+                    columnData[8]= rs.getString("supplyName");
+                    columnData[9]= rs.getString("supplyDate");
+                   model.addRow(columnData);
+            }
+            con.close();
+           }
+           catch(Exception e){
+               JOptionPane.showMessageDialog(null, e);
+           }
+            
+        }
+        try {   
+            con.close();
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+        
+    }
+        
     public void updatebrand(){
         SimpleDateFormat Dformat = new SimpleDateFormat("dd-mm-yyyy"); 
         String supplyNo=findRegNo(supplier.getSelectedItem().toString());
@@ -428,6 +483,32 @@ public class Import extends javax.swing.JFrame {
         }
     }
     public void updateitem(){
+        SimpleDateFormat Dformat = new SimpleDateFormat("dd-mm-yyyy"); 
+        String supplyNo=findRegNo(supplier.getSelectedItem().toString());
+         con = Import.ConnectDB();
+        if(con!=null){
+            String sql = "INSERT INTO item(name,category,min_rate,stockQTY) "
+                    + "VALUES(?,?,?,?)";
+            
+            try{
+               
+                pst = con.prepareStatement(sql);
+                pst.setString(1,item.getText());
+                pst.setString(2,category.getText());
+                int minRate = Integer.parseInt(min_rate.getText());
+                pst.setInt(3,minRate);
+                pst.setInt(4,(int) quantitiy.getValue());
+                pst.execute();
+                //JOptionPane.showMessageDialog(null, "System Updated...");
+                rs.close();
+                pst.close();
+                con.close();
+           }catch(Exception e){
+                System.out.println("error");
+               JOptionPane.showMessageDialog(null, e);
+               
+           }
+        }
         
     }
     private void itemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemActionPerformed
@@ -440,13 +521,83 @@ public class Import extends javax.swing.JFrame {
 
     private void btn_addMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_addMouseClicked
         updatebrand();
-        updateTable();
+        updateitem();
+        rowAdd();
         reset();
     }//GEN-LAST:event_btn_addMouseClicked
 
     private void btn_resetMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_resetMouseClicked
         reset();
     }//GEN-LAST:event_btn_resetMouseClicked
+    public void updateTexts(){
+        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+        int selectedRow = jTable1.getSelectedRow();
+        System.out.println(model.getValueAt(selectedRow, 0));
+        
+        con = Import.ConnectDB();
+        if(con!= null){
+           String sql = "SELECT brandId,category,brandName,name,supplyQTY,ppi,min_rate,MFD,EXP,supplyName,supplyDate"
+                   + " from brand "
+                   + "inner join item on brand.itemName = item.name "
+                   + "inner join Supplier on brand.supply_regNo = Supplier.Supplier_regNo WHERE brandId=?";
+
+           try{
+                
+                pst = con.prepareStatement(sql);
+                pst.setString(1,model.getValueAt(selectedRow, 0).toString());
+                rs = pst.executeQuery();
+            if(rs.next()) {
+                bar_code.setText(rs.getString("brandId"));
+                category.setText(rs.getString("category"));
+                brand_name.setText(rs.getString("brandName"));
+                item.setText(rs.getString("name"));
+                supplier.setSelectedItem(rs.getString("supplyName"));
+                quantitiy.setValue(rs.getInt("supplyQTY"));
+                Date dateMFD = new SimpleDateFormat("dd-mm-yyyy").parse(rs.getString("MFD"));
+                MFD.setDate(dateMFD);
+                Date dateEXP = new SimpleDateFormat("dd-mm-yyyy").parse(rs.getString("EXP"));
+                EXP.setDate(dateEXP);
+                price.setText(rs.getString("ppi"));
+                min_rate.setText(rs.getString("min_rate"));
+
+            }
+            con.close();
+           }
+           catch(Exception e){
+               JOptionPane.showMessageDialog(null, e);
+           }
+            
+        }
+        try {   
+            con.close();
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+    }
+    private void btn_deleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_deleteActionPerformed
+        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+        
+        if(jTable1.getSelectedRow()== -1){
+            
+        }
+        else{
+            updateTexts();
+        }
+        
+    }//GEN-LAST:event_btn_deleteActionPerformed
+
+    private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
+        
+        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+        
+        if(jTable1.getSelectedRow()== -1){
+            
+        }
+        else{
+            updateTexts();
+        }
+        
+    }//GEN-LAST:event_jTable1MouseClicked
     
     public void setColor(JPanel panel){
         panel.setBackground(new Color(85,65,118));

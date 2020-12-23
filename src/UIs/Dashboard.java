@@ -356,6 +356,9 @@ public class Dashboard extends javax.swing.JFrame {
             }
         });
         btn_import.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btn_importMouseClicked(evt);
+            }
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 btn_importMouseExited(evt);
             }
@@ -467,6 +470,11 @@ public class Dashboard extends javax.swing.JFrame {
     private void btn_importMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_importMouseMoved
        setColor(btn_import);
     }//GEN-LAST:event_btn_importMouseMoved
+
+    private void btn_importMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_importMouseClicked
+        this.setVisible(false);
+        new Import().setVisible(true);
+    }//GEN-LAST:event_btn_importMouseClicked
     public void setColor(JPanel panel){
         panel.setBackground(new Color(85,65,118));
     }
