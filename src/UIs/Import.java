@@ -16,6 +16,7 @@ import javax.swing.JPanel;
 import javax.swing.table.DefaultTableModel;
 import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 import java.util.Date;
+import static javax.swing.DropMode.ON;
 
 /**
  *
@@ -33,12 +34,13 @@ public class Import extends javax.swing.JFrame {
 
     /**
      * Creates new form Import
-     */
+     */ 
     public Import() {
         initComponents();
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         jTable1.getTableHeader().setFont(new Font("Tahoma", Font.BOLD, 12));
         AutoCompleteDecorator.decorate(supplier);
+        AutoCompleteDecorator.decorate(item);
         
         
         Object col[]= {"Product Code","Brand Name","Item","Qty","Price Per Item","Min Rate","MFD","EXP","Supplier","DateTime"};
@@ -47,6 +49,7 @@ public class Import extends javax.swing.JFrame {
         con = Import.ConnectDB();
         updateTable();
         supplierUpdate();
+        itemUpdate();
         
     }
     /**
@@ -61,29 +64,24 @@ public class Import extends javax.swing.JFrame {
         parent = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
         insert_panel = new javax.swing.JPanel();
+        jButton1 = new javax.swing.JButton();
+        item = new javax.swing.JComboBox<>();
         jLabel15 = new javax.swing.JLabel();
         MFD = new com.toedter.calendar.JDateChooser();
         EXP = new com.toedter.calendar.JDateChooser();
-        item = new javax.swing.JTextField();
         Total = new javax.swing.JTextField();
         jLabel18 = new javax.swing.JLabel();
         bar_code = new javax.swing.JTextField();
         jLabel16 = new javax.swing.JLabel();
         supplier = new javax.swing.JComboBox<>();
-        category = new javax.swing.JTextField();
-        Product_code = new javax.swing.JTextField();
-        min_rate = new javax.swing.JTextField();
         jLabel13 = new javax.swing.JLabel();
         quantitiy = new javax.swing.JSpinner();
         brand_name = new javax.swing.JTextField();
         price = new javax.swing.JTextField();
         jLabel14 = new javax.swing.JLabel();
-        jLabel12 = new javax.swing.JLabel();
-        jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
-        jLabel10 = new javax.swing.JLabel();
         jLabel11 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         display_panel = new javax.swing.JPanel();
@@ -107,29 +105,40 @@ public class Import extends javax.swing.JFrame {
 
         insert_panel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
+        jButton1.setBackground(new java.awt.Color(102, 0, 102));
+        jButton1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jButton1.setForeground(new java.awt.Color(255, 255, 255));
+        jButton1.setText("New");
+        jButton1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton1MouseClicked(evt);
+            }
+        });
+        insert_panel.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(790, 60, -1, 30));
+
+        item.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        item.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                itemMouseClicked(evt);
+            }
+        });
+        insert_panel.add(item, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 60, 210, 30));
+
         jLabel15.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jLabel15.setText("Total");
         insert_panel.add(jLabel15, new org.netbeans.lib.awtextra.AbsoluteConstraints(680, 190, -1, -1));
         insert_panel.add(MFD, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 190, 110, 30));
         insert_panel.add(EXP, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 190, 110, 30));
 
-        item.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        item.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                itemActionPerformed(evt);
-            }
-        });
-        insert_panel.add(item, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 60, 210, 30));
-
         Total.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         insert_panel.add(Total, new org.netbeans.lib.awtextra.AbsoluteConstraints(740, 190, 130, -1));
 
         jLabel18.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jLabel18.setText("Bar Code");
-        insert_panel.add(jLabel18, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 70, 120, 20));
+        insert_panel.add(jLabel18, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 120, 20));
 
         bar_code.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        insert_panel.add(bar_code, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 60, 160, 30));
+        insert_panel.add(bar_code, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 10, 160, 30));
 
         jLabel16.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jLabel16.setText("Supplier");
@@ -137,22 +146,6 @@ public class Import extends javax.swing.JFrame {
 
         supplier.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         insert_panel.add(supplier, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 100, 210, 30));
-
-        category.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        category.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                categoryActionPerformed(evt);
-            }
-        });
-        insert_panel.add(category, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 110, 160, 30));
-
-        Product_code.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        Product_code.setHorizontalAlignment(javax.swing.JTextField.LEFT);
-        insert_panel.add(Product_code, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 20, 160, 30));
-
-        min_rate.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        min_rate.setHorizontalAlignment(javax.swing.JTextField.LEFT);
-        insert_panel.add(min_rate, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 150, 160, 30));
 
         jLabel13.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jLabel13.setText("EXP");
@@ -171,14 +164,6 @@ public class Import extends javax.swing.JFrame {
         jLabel14.setText("Item");
         insert_panel.add(jLabel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 70, -1, -1));
 
-        jLabel12.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-        jLabel12.setText("Category");
-        insert_panel.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 120, -1, -1));
-
-        jLabel6.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-        jLabel6.setText("Product Code");
-        insert_panel.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 30, 120, 20));
-
         jLabel7.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jLabel7.setText("Brand Name");
         insert_panel.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 20, 120, 30));
@@ -190,10 +175,6 @@ public class Import extends javax.swing.JFrame {
         jLabel9.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jLabel9.setText("Price Per\nOne item(Rs.)");
         insert_panel.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 150, 160, 30));
-
-        jLabel10.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-        jLabel10.setText("Min Rate");
-        insert_panel.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 150, 120, 30));
 
         jLabel11.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jLabel11.setText("MFD");
@@ -320,6 +301,24 @@ public class Import extends javax.swing.JFrame {
            }
         }
     }
+    public void itemUpdate(){
+        con = Import.ConnectDB();
+        if(con!= null){
+           String sql2 = "SELECT * from item";
+          // System.out.println("eeee ");
+           try{
+                pst2 = con.prepareStatement(sql2);
+                rs2 = pst2.executeQuery();
+            while (rs2.next()) {
+                String name = rs2.getString("name");
+                item.addItem(name);
+                  }
+           }
+           catch(Exception e){
+               JOptionPane.showMessageDialog(null, e);
+           }
+        }
+    }
     
     public void updateTable(){
         con = Import.ConnectDB();
@@ -364,12 +363,10 @@ public class Import extends javax.swing.JFrame {
     }
         public void reset(){
             try{
-                Product_code.setText(null);
+                
                 bar_code.setText(null);
-                category.setText(null);
-                min_rate.setText(null);
                 brand_name.setText(null);
-                item.setText(null);
+                item.setSelectedItem(null);
                 price.setText(null);
                 Total.setText(null);
                 supplier.setSelectedItem(null);
@@ -381,7 +378,7 @@ public class Import extends javax.swing.JFrame {
             }
         }
     
-        public String findRegNo(String name){
+    public String findRegNo(String name){
         String x= null;
         con = Import.ConnectDB();
         if(con!=null){
@@ -463,14 +460,24 @@ public class Import extends javax.swing.JFrame {
                 pst = con.prepareStatement(sql);
                 pst.setString(1,bar_code.getText());
                 pst.setString(2,brand_name.getText());
-                pst.setString(3,item.getText());
-                pst.setInt(4,(int) quantitiy.getValue());
+                pst.setString(3,item.getSelectedItem().toString());
+                pst.setInt(4,(int)quantitiy.getValue());
                 int ppi = Integer.parseInt(price.getText());
                 pst.setInt(5,ppi);
-                pst.setString(6,Dformat.format(MFD.getDate()));
-                pst.setString(7,Dformat.format(EXP.getDate()));
+                if(MFD.getDate()!=null){
+                    pst.setString(6,Dformat.format(MFD.getDate()));
+                }
+                else{
+                    pst.setString(6,null);
+                }
+                if(EXP.getDate()!=null){
+                    pst.setString(7,Dformat.format(EXP.getDate()));
+                }
+                else{
+                    pst.setString(7,null);
+                }
                 pst.setString(8,supplyNo);
-                pst.execute();
+                pst.executeUpdate();
                 JOptionPane.showMessageDialog(null, "System Updated...");
                 rs.close();
                 pst.close();
@@ -482,46 +489,74 @@ public class Import extends javax.swing.JFrame {
            }
         }
     }
-    public void updateitem(){
-        SimpleDateFormat Dformat = new SimpleDateFormat("dd-mm-yyyy"); 
-        String supplyNo=findRegNo(supplier.getSelectedItem().toString());
-         con = Import.ConnectDB();
+//    public void updateitem(){
+//        SimpleDateFormat Dformat = new SimpleDateFormat("dd-mm-yyyy"); 
+//        String supplyNo=findRegNo(supplier.getSelectedItem().toString());
+//         con = Import.ConnectDB();
+//        if(con!=null){
+//            String sql = "INSERT INTO item(name,category,min_rate,stockQTY) "
+//                    + "VALUES(?,?,?,?)";
+//            
+//            try{
+//               
+//                pst = con.prepareStatement(sql);
+//                pst.setString(1,item.getSelectedItem().toString());
+//                int minRate = Integer.parseInt(min_rate.getText());
+//                pst.setInt(3,minRate);
+//                pst.setInt(4,(int) quantitiy.getValue());
+//                pst.execute();
+//                //JOptionPane.showMessageDialog(null, "System Updated...");
+//               
+//           }catch(Exception e){
+//                System.out.println("error");
+//               JOptionPane.showMessageDialog(null, e);
+//               
+//           }
+//        }
+//        
+//    }
+    public void AddQty(){
+        int x;
+        con = Import.ConnectDB();
         if(con!=null){
-            String sql = "INSERT INTO item(name,category,min_rate,stockQTY) "
-                    + "VALUES(?,?,?,?)";
+            String sql = "SELECT stockQTY from item where name=?";
             
             try{
                
                 pst = con.prepareStatement(sql);
-                pst.setString(1,item.getText());
-                pst.setString(2,category.getText());
-                int minRate = Integer.parseInt(min_rate.getText());
-                pst.setInt(3,minRate);
-                pst.setInt(4,(int) quantitiy.getValue());
-                pst.execute();
-                //JOptionPane.showMessageDialog(null, "System Updated...");
-                rs.close();
-                pst.close();
-                con.close();
+                pst.setString(1,item.getSelectedItem().toString());
+                rs = pst.executeQuery();
+                if(rs.next()){
+                    System.out.println(rs.getInt("stockQTY") + " "+(int) quantitiy.getValue() );
+                    x = rs.getInt("stockQTY")+(int) quantitiy.getValue();
+                    System.out.println("x"+ x);
+                    String sql2 = "UPDATE item SET stockQTY = ? WHERE name = ?";
+                    try{
+                        pst = con.prepareStatement(sql2);
+                        pst.setInt(1,x);
+                        pst.setString(2,item.getSelectedItem().toString());
+                        rs = pst.executeQuery();
+                         rs.close();
+                         pst.close();
+                         con.close();
+
+                    }catch(Exception e){
+                        JOptionPane.showMessageDialog(null, e);
+                    }
+                    
+                }
+         
            }catch(Exception e){
-                System.out.println("error");
                JOptionPane.showMessageDialog(null, e);
-               
            }
+            
         }
         
     }
-    private void itemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_itemActionPerformed
-
-    private void categoryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_categoryActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_categoryActionPerformed
-
+    
     private void btn_addMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_addMouseClicked
         updatebrand();
-        updateitem();
+        AddQty();
         rowAdd();
         reset();
     }//GEN-LAST:event_btn_addMouseClicked
@@ -536,7 +571,7 @@ public class Import extends javax.swing.JFrame {
         
         con = Import.ConnectDB();
         if(con!= null){
-           String sql = "SELECT brandId,category,brandName,name,supplyQTY,ppi,min_rate,MFD,EXP,supplyName,supplyDate"
+           String sql = "SELECT brandId,brandName,name,supplyQTY,ppi,MFD,EXP,supplyName,supplyDate"
                    + " from brand "
                    + "inner join item on brand.itemName = item.name "
                    + "inner join Supplier on brand.supply_regNo = Supplier.Supplier_regNo WHERE brandId=?";
@@ -548,17 +583,23 @@ public class Import extends javax.swing.JFrame {
                 rs = pst.executeQuery();
             if(rs.next()) {
                 bar_code.setText(rs.getString("brandId"));
-                category.setText(rs.getString("category"));
                 brand_name.setText(rs.getString("brandName"));
-                item.setText(rs.getString("name"));
+                item.setSelectedItem(rs.getString("name"));
                 supplier.setSelectedItem(rs.getString("supplyName"));
                 quantitiy.setValue(rs.getInt("supplyQTY"));
-                Date dateMFD = new SimpleDateFormat("dd-mm-yyyy").parse(rs.getString("MFD"));
-                MFD.setDate(dateMFD);
-                Date dateEXP = new SimpleDateFormat("dd-mm-yyyy").parse(rs.getString("EXP"));
-                EXP.setDate(dateEXP);
+                
+                if(rs.getString("MFD") != null){
+                    Date dateMFD = new SimpleDateFormat("dd-mm-yyyy").parse(rs.getString("MFD"));
+                    MFD.setDate(dateMFD);  
+                }
+                
+                if(rs.getString("EXP") !=null){
+                    Date dateEXP = new SimpleDateFormat("dd-mm-yyyy").parse(rs.getString("EXP"));
+                    EXP.setDate(dateEXP);  
+                }
+                
                 price.setText(rs.getString("ppi"));
-                min_rate.setText(rs.getString("min_rate"));
+            
 
             }
             con.close();
@@ -598,6 +639,16 @@ public class Import extends javax.swing.JFrame {
         }
         
     }//GEN-LAST:event_jTable1MouseClicked
+
+    private void itemMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_itemMouseClicked
+        
+    }//GEN-LAST:event_itemMouseClicked
+
+    private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
+     new ItemSub().setVisible(true);
+     itemUpdate();
+        
+    }//GEN-LAST:event_jButton1MouseClicked
     
     public void setColor(JPanel panel){
         panel.setBackground(new Color(85,65,118));
@@ -644,7 +695,6 @@ public class Import extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private com.toedter.calendar.JDateChooser EXP;
     private com.toedter.calendar.JDateChooser MFD;
-    private javax.swing.JTextField Product_code;
     private javax.swing.JTextField Total;
     private javax.swing.JTextField bar_code;
     private javax.swing.JTextField brand_name;
@@ -653,31 +703,29 @@ public class Import extends javax.swing.JFrame {
     private javax.swing.JButton btn_reset;
     private javax.swing.JButton btn_update;
     private javax.swing.JPanel button_panel;
-    private javax.swing.JTextField category;
     private javax.swing.JPanel display_panel;
     private javax.swing.JPanel insert_panel;
-    private javax.swing.JTextField item;
+    private javax.swing.JComboBox<String> item;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
-    private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
-    private javax.swing.JTextField min_rate;
     private javax.swing.JPanel parent;
     private javax.swing.JTextField price;
     private javax.swing.JSpinner quantitiy;
     private javax.swing.JComboBox<String> supplier;
     // End of variables declaration//GEN-END:variables
+
+    
 }
