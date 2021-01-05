@@ -31,7 +31,9 @@ public class Import extends javax.swing.JFrame {
     ResultSet rs =null;
     ResultSet rs2 =null;
     DefaultTableModel model = new DefaultTableModel();
-
+    int row_num_global;
+    int lastRow= findLastRow();
+    
     /**
      * Creates new form Import
      */ 
@@ -41,9 +43,10 @@ public class Import extends javax.swing.JFrame {
         jTable1.getTableHeader().setFont(new Font("Tahoma", Font.BOLD, 12));
         AutoCompleteDecorator.decorate(supplier);
         AutoCompleteDecorator.decorate(item);
+         
         
         
-        Object col[]= {"Product Code","Brand Name","Item","Qty","Price Per Item","Min Rate","MFD","EXP","Supplier","DateTime"};
+        Object col[]= {"Row No","Product Code","Brand Name","Item","Qty","Price Per Item","Min Rate","MFD","EXP","Supplier","DateTime"};
         model.setColumnIdentifiers(col);
         jTable1.setModel(model);
         con = Import.ConnectDB();
@@ -231,6 +234,11 @@ public class Import extends javax.swing.JFrame {
         btn_update.setFont(new java.awt.Font("Calibri", 0, 24)); // NOI18N
         btn_update.setForeground(new java.awt.Color(255, 255, 255));
         btn_update.setText("UPDATE");
+        btn_update.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btn_updateMouseClicked(evt);
+            }
+        });
         button_panel.add(btn_update, new org.netbeans.lib.awtextra.AbsoluteConstraints(380, 0, 120, 40));
 
         btn_delete.setBackground(new java.awt.Color(102, 0, 102));
@@ -239,9 +247,9 @@ public class Import extends javax.swing.JFrame {
         btn_delete.setText("DELETE");
         btn_delete.setMaximumSize(new java.awt.Dimension(113, 39));
         btn_delete.setMinimumSize(new java.awt.Dimension(113, 39));
-        btn_delete.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_deleteActionPerformed(evt);
+        btn_delete.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btn_deleteMouseClicked(evt);
             }
         });
         button_panel.add(btn_delete, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 0, 120, 40));
@@ -323,7 +331,7 @@ public class Import extends javax.swing.JFrame {
     public void updateTable(){
         con = Import.ConnectDB();
         if(con!= null){
-           String sql = "SELECT brandId,brandName,name,supplyQTY,ppi,min_rate,MFD,EXP,supplyName,supplyDate"
+           String sql = "SELECT rowNum,brandId,brandName,name,supplyQTY,ppi,min_rate,MFD,EXP,supplyName,supplyDate"
                    + " from brand "
                    + "inner join item on brand.itemName = item.name "
                    + "inner join Supplier on brand.supply_regNo = Supplier.Supplier_regNo ";
@@ -332,20 +340,21 @@ public class Import extends javax.swing.JFrame {
                 
                 pst = con.prepareStatement(sql);
                 rs = pst.executeQuery();
-                Object[] columnData = new Object[10];
+                Object[] columnData = new Object[11];
                // System.out.println("eeajasbc");
             while (rs.next()) {
                 //System.out.println("eeeee");
-                    columnData[0]= rs.getString("brandId");
-                    columnData[1]= rs.getString("brandName");
-                    columnData[2]= rs.getString("name");
-                    columnData[3]= rs.getString("supplyQTY");
-                    columnData[4]= rs.getString("ppi");
-                    columnData[5]= rs.getString("min_rate");
-                    columnData[6]= rs.getString("MFD");
-                    columnData[7]= rs.getString("EXP");
-                    columnData[8]= rs.getString("supplyName");
-                    columnData[9]= rs.getString("supplyDate");
+                    columnData[0]= rs.getInt("rowNum");
+                    columnData[1]= rs.getString("brandId");
+                    columnData[2]= rs.getString("brandName");
+                    columnData[3]= rs.getString("name");
+                    columnData[4]= rs.getString("supplyQTY");
+                    columnData[5]= rs.getString("ppi");
+                    columnData[6]= rs.getString("min_rate");
+                    columnData[7]= rs.getString("MFD");
+                    columnData[8]= rs.getString("EXP");
+                    columnData[9]= rs.getString("supplyName");
+                    columnData[10]= rs.getString("supplyDate");
                    model.addRow(columnData);
             }
             con.close();
@@ -378,6 +387,7 @@ public class Import extends javax.swing.JFrame {
             }
         }
     
+    
     public String findRegNo(String name){
         String x= null;
         con = Import.ConnectDB();
@@ -403,57 +413,15 @@ public class Import extends javax.swing.JFrame {
         
         return x;
     }
-    public void rowAdd(){
-         con = Import.ConnectDB();
-        if(con!= null){
-           String sql = "SELECT brandId,brandName,name,supplyQTY,ppi,min_rate,MFD,EXP,supplyName,supplyDate"
-                   + " from brand "
-                   + "inner join item on brand.itemName = item.name "
-                   + "inner join Supplier on brand.supply_regNo = Supplier.Supplier_regNo WHERE brandId=?";
-
-           try{
-                
-                pst = con.prepareStatement(sql);
-                pst.setString(1,bar_code.getText());
-                rs = pst.executeQuery();
-                Object[] columnData = new Object[10];
-               // System.out.println("eeajasbc");
-            if(rs.next()) {
-                //System.out.println("eeeee");
-                    columnData[0]= rs.getString("brandId");
-                    columnData[1]= rs.getString("brandName");
-                    columnData[2]= rs.getString("name");
-                    columnData[3]= rs.getString("supplyQTY");
-                    columnData[4]= rs.getString("ppi");
-                    columnData[5]= rs.getString("min_rate");
-                    columnData[6]= rs.getString("MFD");
-                    columnData[7]= rs.getString("EXP");
-                    columnData[8]= rs.getString("supplyName");
-                    columnData[9]= rs.getString("supplyDate");
-                   model.addRow(columnData);
-            }
-            con.close();
-           }
-           catch(Exception e){
-               JOptionPane.showMessageDialog(null, e);
-           }
-            
-        }
-        try {   
-            con.close();
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, e);
-        }
-        
-    }
+    
         
     public void updatebrand(){
         SimpleDateFormat Dformat = new SimpleDateFormat("dd-mm-yyyy"); 
         String supplyNo=findRegNo(supplier.getSelectedItem().toString());
          con = Import.ConnectDB();
         if(con!=null){
-            String sql = "INSERT INTO brand(brandId,brandName,itemName,supplyQTY,supplyDate,ppi,MFD,EXP,supply_regNo) "
-                    + "VALUES(?,?,?,?,DATETIME('now'),?,?,?,?)";
+            String sql = "INSERT INTO brand(brandId,brandName,itemName,supplyQTY,supplyDate,ppi,MFD,EXP,supply_regNo,rowNum) "
+                    + "VALUES(?,?,?,?,DATETIME('now'),?,?,?,?,?)";
             
             try{
                
@@ -477,11 +445,13 @@ public class Import extends javax.swing.JFrame {
                     pst.setString(7,null);
                 }
                 pst.setString(8,supplyNo);
+                pst.setInt(9,++lastRow);
                 pst.executeUpdate();
                 JOptionPane.showMessageDialog(null, "System Updated...");
                 rs.close();
                 pst.close();
                 con.close();
+
            }catch(Exception e){
                 System.out.println("error");
                JOptionPane.showMessageDialog(null, e);
@@ -489,32 +459,68 @@ public class Import extends javax.swing.JFrame {
            }
         }
     }
-//    public void updateitem(){
-//        SimpleDateFormat Dformat = new SimpleDateFormat("dd-mm-yyyy"); 
-//        String supplyNo=findRegNo(supplier.getSelectedItem().toString());
-//         con = Import.ConnectDB();
-//        if(con!=null){
-//            String sql = "INSERT INTO item(name,category,min_rate,stockQTY) "
-//                    + "VALUES(?,?,?,?)";
-//            
-//            try{
-//               
-//                pst = con.prepareStatement(sql);
-//                pst.setString(1,item.getSelectedItem().toString());
-//                int minRate = Integer.parseInt(min_rate.getText());
-//                pst.setInt(3,minRate);
-//                pst.setInt(4,(int) quantitiy.getValue());
-//                pst.execute();
-//                //JOptionPane.showMessageDialog(null, "System Updated...");
-//               
-//           }catch(Exception e){
-//                System.out.println("error");
-//               JOptionPane.showMessageDialog(null, e);
-//               
-//           }
-//        }
-//        
-//    }
+    public void updateButton(){
+        SimpleDateFormat Dformat = new SimpleDateFormat("dd-mm-yyyy"); 
+        String supplyNo=findRegNo(supplier.getSelectedItem().toString());
+        con = Import.ConnectDB();
+        if(con!=null){
+            String sql = "SELECT itemName,supplyQTY from brand where rowNum=?";
+            
+            try{
+                pst = con.prepareStatement(sql);
+                pst.setInt(1,row_num_global);
+                rs = pst.executeQuery();
+                if(rs.next()){
+                    //System.out.println(rs.getString("itemName")+" "+ rs.getInt("supplyQTY"));
+                    if(!rs.getString("itemName").equals(item.getSelectedItem().toString()) ){
+                        removeItemStock(rs.getString("itemName"),rs.getInt("supplyQTY"));
+                    }
+                     String sql2 = "UPDATE brand SET brandId= ?,brandName= ?,itemName= ?,supplyQTY= ?,ppi= ?,MFD= ?,EXP= ?,supply_regNo= ? "
+                    + "WHERE rowNum= ?";
+            
+                     try{
+               
+                        pst = con.prepareStatement(sql2);
+                        pst.setString(1,bar_code.getText());
+                        pst.setString(2,brand_name.getText());
+                        pst.setString(3,item.getSelectedItem().toString());
+                        pst.setInt(4,(int)quantitiy.getValue());
+                        int ppi = Integer.parseInt(price.getText());
+                        pst.setInt(5,ppi);
+                        if(MFD.getDate()!=null){
+                            pst.setString(6,Dformat.format(MFD.getDate()));
+                        }
+                        else{
+                            pst.setString(6,null);
+                        }
+                        if(EXP.getDate()!=null){
+                            pst.setString(7,Dformat.format(EXP.getDate()));
+                        }
+                        else{
+                            pst.setString(7,null);
+                        }
+                        pst.setString(8,supplyNo);
+                        pst.setInt(9,row_num_global);
+                        pst.executeUpdate();
+                        JOptionPane.showMessageDialog(null, "System Updated...");
+//                        rs.close();
+//                        pst.close();
+                        con.close();
+                        
+                    }catch(Exception e){
+                         System.out.println("error update");
+                        JOptionPane.showMessageDialog(null, e);
+               
+           }
+                    
+                    
+                }
+            }catch(Exception e){
+                System.out.println("error update1");
+                 JOptionPane.showMessageDialog(null, e);
+            }
+        }
+    }
     public void AddQty(){
         int x;
         con = Import.ConnectDB();
@@ -535,12 +541,13 @@ public class Import extends javax.swing.JFrame {
                         pst = con.prepareStatement(sql2);
                         pst.setInt(1,x);
                         pst.setString(2,item.getSelectedItem().toString());
-                        rs = pst.executeQuery();
-                         rs.close();
-                         pst.close();
+                        pst.executeUpdate();
+//                         rs.close();
+//                         pst.close();
                          con.close();
 
                     }catch(Exception e){
+                        System.out.println("error add");
                         JOptionPane.showMessageDialog(null, e);
                     }
                     
@@ -553,21 +560,31 @@ public class Import extends javax.swing.JFrame {
         }
         
     }
+    public void refreshTable(){
+        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+        model.setRowCount(0);
+        updateTable();
+    }
     
     private void btn_addMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_addMouseClicked
         updatebrand();
         AddQty();
-        rowAdd();
+       // rowAdd();
+        refreshTable();
+       // updateTable();
         reset();
     }//GEN-LAST:event_btn_addMouseClicked
 
     private void btn_resetMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_resetMouseClicked
         reset();
+//        publicMethods p1 = new publicMethods();
+//        p1.call();
+        
     }//GEN-LAST:event_btn_resetMouseClicked
     public void updateTexts(){
         DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
         int selectedRow = jTable1.getSelectedRow();
-        System.out.println(model.getValueAt(selectedRow, 0));
+        //System.out.println(model.getValueAt(selectedRow, 0));
         
         con = Import.ConnectDB();
         if(con!= null){
@@ -579,7 +596,7 @@ public class Import extends javax.swing.JFrame {
            try{
                 
                 pst = con.prepareStatement(sql);
-                pst.setString(1,model.getValueAt(selectedRow, 0).toString());
+                pst.setString(1,model.getValueAt(selectedRow, 1).toString());
                 rs = pst.executeQuery();
             if(rs.next()) {
                 bar_code.setText(rs.getString("brandId"));
@@ -602,6 +619,8 @@ public class Import extends javax.swing.JFrame {
             
 
             }
+//            rs.close();
+//            pst.close();
             con.close();
            }
            catch(Exception e){
@@ -615,18 +634,60 @@ public class Import extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, e);
         }
     }
-    private void btn_deleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_deleteActionPerformed
-        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
-        
-        if(jTable1.getSelectedRow()== -1){
-            
-        }
-        else{
-            updateTexts();
-        }
-        
-    }//GEN-LAST:event_btn_deleteActionPerformed
+    public int findLastRow(){
+         con = Import.ConnectDB();
+         int rowNum=0;
+        if(con!= null){
+           String sql = "SELECT rowNum from brand";
 
+           try{
+                
+                pst = con.prepareStatement(sql);
+                rs = pst.executeQuery();
+                while(rs.next()){
+                    rowNum = rs.getInt("rowNum");   
+                }
+//                rs.close();
+//                pst.close();
+                con.close();
+           }catch(Exception e){
+                JOptionPane.showMessageDialog(null, e);   
+                   }
+           
+        }
+        return(rowNum);
+        
+    }
+    
+    public int findRow(){
+        
+        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+        int selectedRow = jTable1.getSelectedRow();
+        int rowNum=0;
+        
+        con = Import.ConnectDB();
+        if(con!= null){
+           String sql = "SELECT rowNum from brand WHERE brandId=?";
+
+           try{
+                
+                pst = con.prepareStatement(sql);
+                pst.setString(1,model.getValueAt(selectedRow, 1).toString());
+                rs = pst.executeQuery();
+                if(rs.next()){
+                    rowNum = rs.getInt("rowNum");
+                    
+                }
+//                rs.close();
+//                pst.close();
+                con.close();
+           }catch(Exception e){
+                JOptionPane.showMessageDialog(null, e);   
+                   }
+           
+        }
+        return(rowNum);
+    }
     private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
         
         DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
@@ -636,10 +697,56 @@ public class Import extends javax.swing.JFrame {
         }
         else{
             updateTexts();
+            row_num_global=findRow();            
+            System.out.println("row num : "+ row_num_global);
         }
         
     }//GEN-LAST:event_jTable1MouseClicked
+    
+    public void removeItemStock(String itemName,int Qty){
+        int x;
+        con = Import.ConnectDB();
+        if(con!=null){
+            String sql = "SELECT stockQTY from item where name=?";
+            
+            try{
+               
+                pst = con.prepareStatement(sql);
+                pst.setString(1,itemName);
+                rs = pst.executeQuery();
+                if(rs.next()){
+                    System.out.println(rs.getInt("stockQTY") + " "+Qty);
+                    x = rs.getInt("stockQTY")-Qty;
+                    System.out.println("x"+ x);
+                    String sql2 = "UPDATE item SET stockQTY = ? WHERE name = ?";
+                    try{
+                        pst = con.prepareStatement(sql2);
+                        pst.setInt(1,x);
+                        pst.setString(2,item.getSelectedItem().toString());
+                         pst.executeUpdate();
+//                         rs.close();
+//                         pst.close();
+                         con.close();
 
+                    }catch(Exception e){
+                        System.out.println("error remove");
+                        JOptionPane.showMessageDialog(null, e);
+                    }
+                    
+                }
+         
+           }catch(Exception e){
+               System.out.println("error remove1");
+               JOptionPane.showMessageDialog(null, e);
+           }
+            
+        }
+        
+    }
+        
+    
+    
+    
     private void itemMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_itemMouseClicked
         
     }//GEN-LAST:event_itemMouseClicked
@@ -649,6 +756,40 @@ public class Import extends javax.swing.JFrame {
      itemUpdate();
         
     }//GEN-LAST:event_jButton1MouseClicked
+    public void deleteBtnFunc(){
+        con = Import.ConnectDB();
+        if(con!=null){
+            String sql = "DELETE FROM brand WHERE brandId = ?";
+        
+            try{
+                pst = con.prepareStatement(sql);
+                pst.setString(1,bar_code.getText());
+                pst.executeUpdate();
+                removeItemStock(item.getSelectedItem().toString(),(int) quantitiy.getValue() );
+//                rs.close();
+//                pst.close();
+                con.close();
+                
+
+                
+            }catch(Exception e){
+                JOptionPane.showMessageDialog(null, e);
+            }
+        
+    }
+    } 
+    private void btn_deleteMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_deleteMouseClicked
+        deleteBtnFunc();
+        refreshTable();
+        reset();
+    }//GEN-LAST:event_btn_deleteMouseClicked
+    
+    
+    private void btn_updateMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_updateMouseClicked
+        updateButton();
+        refreshTable();
+        reset();
+    }//GEN-LAST:event_btn_updateMouseClicked
     
     public void setColor(JPanel panel){
         panel.setBackground(new Color(85,65,118));
