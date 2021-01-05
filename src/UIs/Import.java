@@ -462,6 +462,8 @@ public class Import extends javax.swing.JFrame {
     public void updateButton(){
         SimpleDateFormat Dformat = new SimpleDateFormat("dd-mm-yyyy"); 
         String supplyNo=findRegNo(supplier.getSelectedItem().toString());
+        String itemName = null;
+        int Qty =0;
         con = Import.ConnectDB();
         if(con!=null){
             String sql = "SELECT itemName,supplyQTY from brand where rowNum=?";
@@ -473,7 +475,8 @@ public class Import extends javax.swing.JFrame {
                 if(rs.next()){
                     //System.out.println(rs.getString("itemName")+" "+ rs.getInt("supplyQTY"));
                     if(!rs.getString("itemName").equals(item.getSelectedItem().toString()) ){
-                        removeItemStock(rs.getString("itemName"),rs.getInt("supplyQTY"));
+                        itemName = rs.getString("itemName");
+                        Qty = rs.getInt("supplyQTY");
                     }
                      String sql2 = "UPDATE brand SET brandId= ?,brandName= ?,itemName= ?,supplyQTY= ?,ppi= ?,MFD= ?,EXP= ?,supply_regNo= ? "
                     + "WHERE rowNum= ?";
@@ -511,10 +514,12 @@ public class Import extends javax.swing.JFrame {
                          System.out.println("error update");
                         JOptionPane.showMessageDialog(null, e);
                
-           }
-                    
-                    
+                    }  
                 }
+                if(itemName!= null){
+                    removeItemStock(itemName,Qty);
+                }
+                
             }catch(Exception e){
                 System.out.println("error update1");
                  JOptionPane.showMessageDialog(null, e);
@@ -704,6 +709,7 @@ public class Import extends javax.swing.JFrame {
     }//GEN-LAST:event_jTable1MouseClicked
     
     public void removeItemStock(String itemName,int Qty){
+        System.out.println(itemName + " "+ Qty);
         int x;
         con = Import.ConnectDB();
         if(con!=null){
@@ -715,17 +721,18 @@ public class Import extends javax.swing.JFrame {
                 pst.setString(1,itemName);
                 rs = pst.executeQuery();
                 if(rs.next()){
-                    System.out.println(rs.getInt("stockQTY") + " "+Qty);
-                    x = rs.getInt("stockQTY")-Qty;
+                    //System.out.println(rs.getInt("stockQTY") + " "+(int) quantitiy.getValue() );
+                    x = rs.getInt("stockQTY")- Qty;
                     System.out.println("x"+ x);
+                   // con = Import.ConnectDB();
                     String sql2 = "UPDATE item SET stockQTY = ? WHERE name = ?";
                     try{
                         pst = con.prepareStatement(sql2);
                         pst.setInt(1,x);
-                        pst.setString(2,item.getSelectedItem().toString());
-                         pst.executeUpdate();
-//                         rs.close();
-//                         pst.close();
+                        pst.setString(2,itemName);
+                        pst.executeUpdate();
+                         rs.close();
+                        pst.close();
                          con.close();
 
                     }catch(Exception e){
@@ -734,17 +741,58 @@ public class Import extends javax.swing.JFrame {
                     }
                     
                 }
-         
+                
            }catch(Exception e){
-               System.out.println("error remove1");
                JOptionPane.showMessageDialog(null, e);
            }
             
         }
         
     }
-        
     
+    
+//    public void removeItemStock(String itemName,int Qty){
+//        int x;
+//        con = Import.ConnectDB();
+//        if(con!=null){
+//            String sql = "SELECT stockQTY from item where name=?";
+//            
+//            try{
+//               
+//                pst = con.prepareStatement(sql);
+//                pst.setString(1,itemName);
+//                rs = pst.executeQuery();
+//                if(rs.next()){
+//                    System.out.println(rs.getInt("stockQTY") + " "+Qty);
+//                    x = rs.getInt("stockQTY")-Qty;
+//                    System.out.println("x"+ x);
+//                    String sql2 = "UPDATE item SET stockQTY = ? WHERE name = ?";
+//                    try{
+//                        pst = con.prepareStatement(sql2);
+//                        pst.setInt(1,x);
+//                        pst.setString(2,itemName);
+//                        pst.executeUpdate();
+////                         rs.close();
+////                         pst.close();
+//                         //con.close();
+//
+//                    }catch(Exception e){
+//                        System.out.println("error remove");
+//                        JOptionPane.showMessageDialog(null, e);
+//                    }
+//                    
+//                }
+//         
+//           }catch(Exception e){
+//               System.out.println("error remove1");
+//               JOptionPane.showMessageDialog(null, e);
+//           }
+//            
+//        }
+//        
+//    }
+//        
+//    
     
     
     private void itemMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_itemMouseClicked
