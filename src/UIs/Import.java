@@ -31,7 +31,7 @@ public class Import extends javax.swing.JFrame {
     ResultSet rs =null;
     ResultSet rs2 =null;
     DefaultTableModel model = new DefaultTableModel();
-    int row_num_global;
+    int row_num_global=0;
     int lastRow= findLastRow();
     
     /**
@@ -67,6 +67,8 @@ public class Import extends javax.swing.JFrame {
         parent = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
         insert_panel = new javax.swing.JPanel();
+        jLabel17 = new javax.swing.JLabel();
+        discount = new javax.swing.JSpinner();
         jButton1 = new javax.swing.JButton();
         item = new javax.swing.JComboBox<>();
         jLabel15 = new javax.swing.JLabel();
@@ -108,6 +110,13 @@ public class Import extends javax.swing.JFrame {
 
         insert_panel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
+        jLabel17.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        jLabel17.setText("Discounts");
+        insert_panel.add(jLabel17, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 120, -1, -1));
+
+        discount.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        insert_panel.add(discount, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 110, 160, 30));
+
         jButton1.setBackground(new java.awt.Color(102, 0, 102));
         jButton1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jButton1.setForeground(new java.awt.Color(255, 255, 255));
@@ -130,11 +139,11 @@ public class Import extends javax.swing.JFrame {
         jLabel15.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jLabel15.setText("Total");
         insert_panel.add(jLabel15, new org.netbeans.lib.awtextra.AbsoluteConstraints(680, 190, -1, -1));
-        insert_panel.add(MFD, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 190, 110, 30));
-        insert_panel.add(EXP, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 190, 110, 30));
+        insert_panel.add(MFD, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 190, 210, 30));
+        insert_panel.add(EXP, new org.netbeans.lib.awtextra.AbsoluteConstraints(380, 190, 200, 30));
 
         Total.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        insert_panel.add(Total, new org.netbeans.lib.awtextra.AbsoluteConstraints(740, 190, 130, -1));
+        insert_panel.add(Total, new org.netbeans.lib.awtextra.AbsoluteConstraints(740, 190, 190, 30));
 
         jLabel18.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jLabel18.setText("Bar Code");
@@ -145,17 +154,17 @@ public class Import extends javax.swing.JFrame {
 
         jLabel16.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jLabel16.setText("Supplier");
-        insert_panel.add(jLabel16, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 110, -1, -1));
+        insert_panel.add(jLabel16, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 130, -1, -1));
 
         supplier.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        insert_panel.add(supplier, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 100, 210, 30));
+        insert_panel.add(supplier, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 120, 210, 30));
 
         jLabel13.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jLabel13.setText("EXP");
-        insert_panel.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 190, 120, 20));
+        insert_panel.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 190, 120, 20));
 
         quantitiy.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        insert_panel.add(quantitiy, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 120, 60, -1));
+        insert_panel.add(quantitiy, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 74, 160, 30));
 
         brand_name.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         insert_panel.add(brand_name, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 20, 210, 30));
@@ -173,7 +182,7 @@ public class Import extends javax.swing.JFrame {
 
         jLabel8.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jLabel8.setText("Quantity");
-        insert_panel.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 120, 120, 20));
+        insert_panel.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 80, 120, 20));
 
         jLabel9.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jLabel9.setText("Price Per\nOne item(Rs.)");
@@ -751,50 +760,6 @@ public class Import extends javax.swing.JFrame {
     }
     
     
-//    public void removeItemStock(String itemName,int Qty){
-//        int x;
-//        con = Import.ConnectDB();
-//        if(con!=null){
-//            String sql = "SELECT stockQTY from item where name=?";
-//            
-//            try{
-//               
-//                pst = con.prepareStatement(sql);
-//                pst.setString(1,itemName);
-//                rs = pst.executeQuery();
-//                if(rs.next()){
-//                    System.out.println(rs.getInt("stockQTY") + " "+Qty);
-//                    x = rs.getInt("stockQTY")-Qty;
-//                    System.out.println("x"+ x);
-//                    String sql2 = "UPDATE item SET stockQTY = ? WHERE name = ?";
-//                    try{
-//                        pst = con.prepareStatement(sql2);
-//                        pst.setInt(1,x);
-//                        pst.setString(2,itemName);
-//                        pst.executeUpdate();
-////                         rs.close();
-////                         pst.close();
-//                         //con.close();
-//
-//                    }catch(Exception e){
-//                        System.out.println("error remove");
-//                        JOptionPane.showMessageDialog(null, e);
-//                    }
-//                    
-//                }
-//         
-//           }catch(Exception e){
-//               System.out.println("error remove1");
-//               JOptionPane.showMessageDialog(null, e);
-//           }
-//            
-//        }
-//        
-//    }
-//        
-//    
-    
-    
     private void itemMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_itemMouseClicked
         
     }//GEN-LAST:event_itemMouseClicked
@@ -817,6 +782,7 @@ public class Import extends javax.swing.JFrame {
 //                rs.close();
 //                pst.close();
                 con.close();
+                resetRows();
                 
 
                 
@@ -825,10 +791,58 @@ public class Import extends javax.swing.JFrame {
             }
         
     }
-    } 
+    }
+    
+    public void resetRows(){
+         con = Import.ConnectDB();
+         int row= row_num_global;
+        if(con!= null){
+           String sql = "SELECT * from brand";
+
+           try{
+                
+                pst = con.prepareStatement(sql);
+                rs = pst.executeQuery();
+                //System.out.println(""row_num_global);
+                while(rs.next()){
+                    if(rs.getInt("rowNum")>row_num_global){
+                        //System.out.println(rs.getInt("rowNum"));
+                        String sql2 ="UPDATE brand SET rowNum = ? WHERE brandId = ?";
+                        try{
+                            
+                        pst = con.prepareStatement(sql2);
+                        pst.setInt(1,row);
+                        pst.setInt(2,rs.getInt("brandId"));
+                        pst.executeUpdate();
+                        System.out.println(row);
+                        row++;
+                        rs.close();
+                        pst.close();
+                        con.close();
+
+                        }catch(Exception e){
+                            System.out.println("error remove");
+                            JOptionPane.showMessageDialog(null, e);
+                        }
+
+                    }   
+                }
+//                rs.close();
+//                pst.close();
+                con.close();
+           }catch(Exception e){
+                JOptionPane.showMessageDialog(null, e);   
+                   }
+           
+        }
+        
+        
+    }
+    
     private void btn_deleteMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_deleteMouseClicked
         deleteBtnFunc();
         refreshTable();
+        
         reset();
     }//GEN-LAST:event_btn_deleteMouseClicked
     
@@ -892,6 +906,7 @@ public class Import extends javax.swing.JFrame {
     private javax.swing.JButton btn_reset;
     private javax.swing.JButton btn_update;
     private javax.swing.JPanel button_panel;
+    private javax.swing.JSpinner discount;
     private javax.swing.JPanel display_panel;
     private javax.swing.JPanel insert_panel;
     private javax.swing.JComboBox<String> item;
@@ -902,6 +917,7 @@ public class Import extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
+    private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel7;
