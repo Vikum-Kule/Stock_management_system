@@ -26,5 +26,11 @@ public class publicMethods {
         }
         return null;
     }
+    public Float totalCal(Float discount, Float ppi, int numOfItem){
+        Float temp = ppi*numOfItem;
+        Float total = temp - temp*(discount/100);
+        
+        return total;
+    }
     
 }

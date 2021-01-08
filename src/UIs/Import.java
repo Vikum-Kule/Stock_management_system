@@ -46,13 +46,14 @@ public class Import extends javax.swing.JFrame {
          
         
         
-        Object col[]= {"Row No","Product Code","Brand Name","Item","Qty","Price Per Item","Min Rate","MFD","EXP","Supplier","DateTime"};
+        Object col[]= {"Row No","Product Code","Brand Name","Item","Qty","Min Rate","MFD","EXP","Supplier","DateTime","Total"};
         model.setColumnIdentifiers(col);
         jTable1.setModel(model);
         con = Import.ConnectDB();
         updateTable();
         supplierUpdate();
         itemUpdate();
+        reset();
         
     }
     /**
@@ -67,8 +68,8 @@ public class Import extends javax.swing.JFrame {
         parent = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
         insert_panel = new javax.swing.JPanel();
+        discount = new javax.swing.JTextField();
         jLabel17 = new javax.swing.JLabel();
-        discount = new javax.swing.JSpinner();
         jButton1 = new javax.swing.JButton();
         item = new javax.swing.JComboBox<>();
         jLabel15 = new javax.swing.JLabel();
@@ -93,6 +94,7 @@ public class Import extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
         button_panel = new javax.swing.JPanel();
+        totalDiscount = new javax.swing.JButton();
         btn_reset = new javax.swing.JButton();
         btn_update = new javax.swing.JButton();
         btn_delete = new javax.swing.JButton();
@@ -110,12 +112,12 @@ public class Import extends javax.swing.JFrame {
 
         insert_panel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
+        discount.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        insert_panel.add(discount, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 110, 140, 30));
+
         jLabel17.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jLabel17.setText("Discounts");
         insert_panel.add(jLabel17, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 120, -1, -1));
-
-        discount.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        insert_panel.add(discount, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 110, 160, 30));
 
         jButton1.setBackground(new java.awt.Color(102, 0, 102));
         jButton1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
@@ -227,6 +229,18 @@ public class Import extends javax.swing.JFrame {
         jPanel1.add(display_panel, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 300, 990, 260));
 
         button_panel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        totalDiscount.setBackground(new java.awt.Color(102, 0, 102));
+        totalDiscount.setFont(new java.awt.Font("Calibri", 0, 14)); // NOI18N
+        totalDiscount.setForeground(new java.awt.Color(255, 255, 255));
+        totalDiscount.setText("<html> TOTAL<br />DISCOUNT</html>");
+        totalDiscount.setActionCommand("");
+        totalDiscount.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                totalDiscountMouseClicked(evt);
+            }
+        });
+        button_panel.add(totalDiscount, new org.netbeans.lib.awtextra.AbsoluteConstraints(700, 0, 120, 40));
 
         btn_reset.setBackground(new java.awt.Color(102, 0, 102));
         btn_reset.setFont(new java.awt.Font("Calibri", 0, 24)); // NOI18N
@@ -340,7 +354,7 @@ public class Import extends javax.swing.JFrame {
     public void updateTable(){
         con = Import.ConnectDB();
         if(con!= null){
-           String sql = "SELECT rowNum,brandId,brandName,name,supplyQTY,ppi,min_rate,MFD,EXP,supplyName,supplyDate"
+           String sql = "SELECT rowNum,brandId,brandName,name,supplyQTY,min_rate,MFD,EXP,supplyName,supplyDate,total"
                    + " from brand "
                    + "inner join item on brand.itemName = item.name "
                    + "inner join Supplier on brand.supply_regNo = Supplier.Supplier_regNo ";
@@ -358,12 +372,12 @@ public class Import extends javax.swing.JFrame {
                     columnData[2]= rs.getString("brandName");
                     columnData[3]= rs.getString("name");
                     columnData[4]= rs.getString("supplyQTY");
-                    columnData[5]= rs.getString("ppi");
-                    columnData[6]= rs.getString("min_rate");
-                    columnData[7]= rs.getString("MFD");
-                    columnData[8]= rs.getString("EXP");
-                    columnData[9]= rs.getString("supplyName");
-                    columnData[10]= rs.getString("supplyDate");
+                    columnData[5]= rs.getString("min_rate");
+                    columnData[6]= rs.getString("MFD");
+                    columnData[7]= rs.getString("EXP");
+                    columnData[8]= rs.getString("supplyName");
+                    columnData[9]= rs.getString("supplyDate");
+                    columnData[10]= rs.getFloat("total");
                    model.addRow(columnData);
             }
             con.close();
@@ -385,12 +399,13 @@ public class Import extends javax.swing.JFrame {
                 bar_code.setText(null);
                 brand_name.setText(null);
                 item.setSelectedItem(null);
-                price.setText(null);
-                Total.setText(null);
+                price.setText("0.00");
+                Total.setText("0.00");
                 supplier.setSelectedItem(null);
                 quantitiy.setValue(0);
                 MFD.setDate(null);
                 EXP.setDate(null);
+                discount.setText("0.00");
             }catch(Exception e){
                 
             }
@@ -423,14 +438,15 @@ public class Import extends javax.swing.JFrame {
         return x;
     }
     
+    
         
     public void updatebrand(){
         SimpleDateFormat Dformat = new SimpleDateFormat("dd-mm-yyyy"); 
         String supplyNo=findRegNo(supplier.getSelectedItem().toString());
          con = Import.ConnectDB();
         if(con!=null){
-            String sql = "INSERT INTO brand(brandId,brandName,itemName,supplyQTY,supplyDate,ppi,MFD,EXP,supply_regNo,rowNum) "
-                    + "VALUES(?,?,?,?,DATETIME('now'),?,?,?,?,?)";
+            String sql = "INSERT INTO brand(brandId,brandName,itemName,supplyQTY,supplyDate,ppi,MFD,EXP,supply_regNo,rowNum,total,discount,discount_stat) "
+                    + "VALUES(?,?,?,?,DATETIME('now'),?,?,?,?,?,?,?,?)";
             
             try{
                
@@ -439,8 +455,8 @@ public class Import extends javax.swing.JFrame {
                 pst.setString(2,brand_name.getText());
                 pst.setString(3,item.getSelectedItem().toString());
                 pst.setInt(4,(int)quantitiy.getValue());
-                int ppi = Integer.parseInt(price.getText());
-                pst.setInt(5,ppi);
+                Float ppi = Float.parseFloat(price.getText());
+                pst.setFloat(5,ppi);
                 if(MFD.getDate()!=null){
                     pst.setString(6,Dformat.format(MFD.getDate()));
                 }
@@ -455,6 +471,19 @@ public class Import extends javax.swing.JFrame {
                 }
                 pst.setString(8,supplyNo);
                 pst.setInt(9,++lastRow);
+                Float Discount = Float.parseFloat(discount.getText());
+                 publicMethods p1 = new publicMethods();
+                Float total= p1.totalCal(Discount, ppi, (int)quantitiy.getValue());
+                //Float total = Float.parseFloat(Total.getText());
+                pst.setFloat(10,total);  
+                
+                pst.setFloat(11,Discount);
+                if(Discount!=0.0){
+                    pst.setString(12,"item by");
+                }
+                else{
+                    pst.setString(12,"null");
+                }
                 pst.executeUpdate();
                 JOptionPane.showMessageDialog(null, "System Updated...");
                 rs.close();
@@ -487,7 +516,8 @@ public class Import extends javax.swing.JFrame {
                         itemName = rs.getString("itemName");
                         Qty = rs.getInt("supplyQTY");
                     }
-                     String sql2 = "UPDATE brand SET brandId= ?,brandName= ?,itemName= ?,supplyQTY= ?,ppi= ?,MFD= ?,EXP= ?,supply_regNo= ? "
+                     String sql2 = "UPDATE brand SET brandId= ?,brandName= ?,itemName= ?,supplyQTY= ?,ppi= ?,MFD= ?,EXP= ?,supply_regNo= ?,total= ?,"
+                             + "discount= ?,discount_stat= ? "
                     + "WHERE rowNum= ?";
             
                      try{
@@ -497,8 +527,8 @@ public class Import extends javax.swing.JFrame {
                         pst.setString(2,brand_name.getText());
                         pst.setString(3,item.getSelectedItem().toString());
                         pst.setInt(4,(int)quantitiy.getValue());
-                        int ppi = Integer.parseInt(price.getText());
-                        pst.setInt(5,ppi);
+                        Float ppi = Float.parseFloat(price.getText());
+                        pst.setFloat(5,ppi);
                         if(MFD.getDate()!=null){
                             pst.setString(6,Dformat.format(MFD.getDate()));
                         }
@@ -512,7 +542,21 @@ public class Import extends javax.swing.JFrame {
                             pst.setString(7,null);
                         }
                         pst.setString(8,supplyNo);
-                        pst.setInt(9,row_num_global);
+                        Float Discount = Float.parseFloat(discount.getText());
+                        publicMethods p1 = new publicMethods();
+                        Float total= p1.totalCal(Discount, ppi, (int)quantitiy.getValue());
+                        pst.setFloat(9,total);
+                        //Float total = Float.parseFloat(Total.getText());
+                          
+
+                        pst.setFloat(10,Discount);
+                           if(Discount!=0.0){
+                               pst.setString(11,"item by");
+                           }
+                           else{
+                               pst.setString(11,"null");
+                           }
+                        pst.setInt(12,row_num_global);
                         pst.executeUpdate();
                         JOptionPane.showMessageDialog(null, "System Updated...");
 //                        rs.close();
@@ -840,18 +884,37 @@ public class Import extends javax.swing.JFrame {
     }
     
     private void btn_deleteMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_deleteMouseClicked
-        deleteBtnFunc();
-        refreshTable();
+       DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
         
-        reset();
+        if(jTable1.getSelectedRow()== -1){
+           JOptionPane.showMessageDialog(null, "please select a row"); 
+        }
+        else{
+            deleteBtnFunc();
+            refreshTable();
+
+            reset();
+        }
+        
     }//GEN-LAST:event_btn_deleteMouseClicked
     
     
     private void btn_updateMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_updateMouseClicked
-        updateButton();
-        refreshTable();
-        reset();
+       DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+        
+        if(jTable1.getSelectedRow()== -1){
+           JOptionPane.showMessageDialog(null, "please select a row"); 
+        }
+        else{
+            updateButton();
+            refreshTable();
+            reset();
+        }
     }//GEN-LAST:event_btn_updateMouseClicked
+
+    private void totalDiscountMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_totalDiscountMouseClicked
+        new subTotalDiscount().setVisible(true);
+    }//GEN-LAST:event_totalDiscountMouseClicked
     
     public void setColor(JPanel panel){
         panel.setBackground(new Color(85,65,118));
@@ -906,7 +969,7 @@ public class Import extends javax.swing.JFrame {
     private javax.swing.JButton btn_reset;
     private javax.swing.JButton btn_update;
     private javax.swing.JPanel button_panel;
-    private javax.swing.JSpinner discount;
+    private javax.swing.JTextField discount;
     private javax.swing.JPanel display_panel;
     private javax.swing.JPanel insert_panel;
     private javax.swing.JComboBox<String> item;
@@ -930,6 +993,7 @@ public class Import extends javax.swing.JFrame {
     private javax.swing.JTextField price;
     private javax.swing.JSpinner quantitiy;
     private javax.swing.JComboBox<String> supplier;
+    private javax.swing.JButton totalDiscount;
     // End of variables declaration//GEN-END:variables
 
     
